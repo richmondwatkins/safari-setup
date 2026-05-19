@@ -1,0 +1,198 @@
+/* Hatch Safari onboarding — shared styles for both pages. */
+
+:root {
+  color-scheme: light dark;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+               system-ui, sans-serif;
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --text: #1c1c1e;
+  --text-secondary: #6b6b70;
+  --text-tertiary: #aeaeb2;
+  --separator: rgba(60, 60, 67, 0.18);
+  --accent: #007aff;
+  --accent-text: #ffffff;
+  --highlight-bg: rgba(0, 122, 255, 0.08);
+  --success: #34c759;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08),
+            0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --text: #f2f2f7;
+    --text-secondary: #98989f;
+    --text-tertiary: #636366;
+    --separator: rgba(84, 84, 88, 0.6);
+    --accent: #0a84ff;
+    --highlight-bg: rgba(10, 132, 255, 0.16);
+    --success: #30d158;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4),
+              0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  min-height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ---- Topbar (brand + progress, shared) ---- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--separator);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .brand__logo {
+    background: linear-gradient(135deg, #0a84ff 0%, #7d7aff 100%);
+  }
+}
+
+.brand__name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress__bar {
+  display: inline-block;
+  width: 72px;
+  height: 4px;
+  background: var(--separator);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress__fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progress__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ---- Page wrapper, shared ---- */
+
+.page {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+
+.headline {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+.headline em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.lede {
+  margin: 0 0 32px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* ---- Numbered ordered list (Page B) ---- */
+
+.steps {
+  margin: 0 0 28px;
+  padding-left: 24px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.steps li {
+  margin-bottom: 8px;
+}
+
+.steps strong {
+  font-weight: 600;
+}
+
+/* ---- Privacy footer (Page B) ---- */
+
+.footer {
+  margin: 28px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.footer__lock {
+  margin-right: 4px;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 374px) {
+  .page {
+    padding: 20px 16px 40px;
+  }
+  .headline {
+    font-size: 24px;
+  }
+  .topbar {
+    padding: 12px 16px 10px;
+  }
+  .progress__bar {
+    width: 56px;
+  }
+}

@@ -1,0 +1,150 @@
+/* Page A — "Turn on Hatch" — vertical numbered steps with iOS UI mocks. */
+
+.steps-vertical {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 0;
+  position: relative;
+}
+
+.step + .step::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 0;
+  width: 1px;
+  height: 18px;
+  background: var(--separator);
+}
+
+.step__num {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.step__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 18px;
+  line-height: 1.4;
+  padding-top: 5px;
+}
+
+/* Inline icon containers */
+
+.inline-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.inline-icon--aa {
+  background: var(--surface);
+  border: 1.5px solid var(--separator);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.inline-icon--puzzle {
+  opacity: 0.7;
+}
+
+.inline-icon--badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .inline-icon--badge {
+    background: linear-gradient(135deg, #0a84ff 0%, #7d7aff 100%);
+  }
+}
+
+.inline-icon--toggle {
+  width: 36px;
+  height: 22px;
+}
+
+.inline-icon__toggle {
+  display: inline-block;
+  width: 36px;
+  height: 22px;
+  background: var(--success);
+  border-radius: 999px;
+  position: relative;
+}
+
+.inline-icon__knob {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Down pointer */
+
+.pointer-down {
+  text-align: center;
+  margin: 8px 0 0;
+}
+
+.pointer-down__emoji {
+  font-size: 52px;
+  display: inline-block;
+  animation: point-bounce 2s ease-in-out infinite;
+}
+
+@keyframes point-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+/* Responsive */
+
+@media (max-width: 374px) {
+  .step__body {
+    font-size: 16px;
+  }
+  .step__num {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .step + .step::before {
+    left: 15px;
+  }
+}

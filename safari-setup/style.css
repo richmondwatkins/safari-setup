@@ -1,0 +1,107 @@
+/* Page B — "Allow on Every Website" — pointer, action sheet mocks. */
+
+/* Up pointer */
+
+.pointer-up {
+  text-align: right;
+  padding-right: 24px;
+  margin: -4px 0 12px;
+}
+
+.pointer-up__emoji {
+  font-size: 32px;
+  display: inline-block;
+  animation: point-up-bounce 2.5s ease-in-out infinite;
+}
+
+@keyframes point-up-bounce {
+  0%, 100% { transform: rotate(15deg) translateY(0); }
+  50% { transform: rotate(15deg) translateY(-5px); }
+}
+
+/* Action sheet mocks */
+
+.sheets {
+  margin: 0 0 32px;
+  padding: 16px 12px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.sheets__label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 0 0 14px;
+}
+
+.sheets__row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sheet {
+  flex: 1;
+  min-width: 0;
+  border-radius: 13px;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.sheet__option {
+  padding: 11px 8px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--accent);
+  position: relative;
+}
+
+.sheet__option + .sheet__option::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: var(--separator);
+}
+
+.sheet__option--highlight {
+  background: var(--highlight-bg);
+  font-weight: 600;
+}
+
+.sheet__option--muted {
+  opacity: 0.5;
+}
+
+.sheets__arrow {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  color: var(--text-tertiary);
+}
+
+/* Responsive */
+
+@media (max-width: 374px) {
+  .sheet__option {
+    font-size: 11px;
+    padding: 9px 6px;
+  }
+  .sheets__row {
+    gap: 6px;
+  }
+  .sheets {
+    padding: 12px 8px;
+  }
+}
