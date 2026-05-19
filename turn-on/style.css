@@ -1,9 +1,26 @@
 /* Page A — "Turn on Hatch" — vertical numbered steps with iOS UI mocks. */
 
+/* Fill viewport so pointer can flex to bottom */
+.page--turn-on {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 52px); /* subtract topbar height */
+  padding-bottom: 12px;
+}
+
+.page--turn-on .lede {
+  margin-bottom: 24px;
+}
+
 .steps-vertical {
   list-style: none;
   padding: 0;
-  margin: 0 0 40px;
+  margin: 0;
+}
+
+/* Spacer pushes pointer to bottom */
+.page--turn-on .steps-vertical {
+  margin-bottom: auto;
 }
 
 .step {
@@ -114,12 +131,12 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Down pointer — pinned bottom-left to point at Safari's AA button */
+/* Down pointer — sits at bottom of viewport via flex layout */
 
 .pointer-down {
-  position: fixed;
-  bottom: 44px;
-  left: 20px;
+  text-align: left;
+  padding-left: 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .pointer-down__emoji {
