@@ -114,12 +114,12 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Down pointer — bottom-left to point at Safari's AA button */
+/* Down pointer — pinned bottom-left to point at Safari's AA button */
 
 .pointer-down {
-  text-align: left;
-  margin: 8px 0 0;
-  padding-left: 4px;
+  position: fixed;
+  bottom: 100px;
+  left: 20px;
 }
 
 .pointer-down__emoji {
