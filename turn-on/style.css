@@ -135,13 +135,14 @@
 
 .pointer-down {
   text-align: left;
-  padding-left: 4px;
+  /* AA button sits ~12% from left edge when no back chevron */
+  padding-left: 12%;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* When Safari shows a back button, the AA button shifts right */
 .pointer-down--has-back {
-  padding-left: 18%;
+  padding-left: 22%;
 }
 
 .pointer-down__emoji {
