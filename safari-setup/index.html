@@ -65,37 +65,68 @@
       </footer>
     </main>
     <!--
-      iOS 26 Safari Extension permissions trigger probe.
+      iOS 26 Safari Extension permissions trigger.
 
       Reads a `trigger` query param containing the extension's
-      safari-web-extension:// URL (passed by background.js on install).
-      Fires repeated HEAD fetches to that URL — each fetch forces Safari
-      to re-evaluate the extension's content_scripts.matches, which
-      reliably surfaces the "Additional Permissions Requested · Review"
-      banner. Mirrors Phia's production implementation.
+      safari-web-extension://<UUID>/triggerPermissions.html URL
+      (passed by background.js on install).
+
+      Rapidly creates and destroys iframes whose src is the extension-
+      internal URL. Each iframe load is a real page-load event that
+      forces Safari to evaluate the extension's content_scripts.matches
+      and host_permissions against the loaded URL. After enough rapid
+      loads, Safari reliably surfaces the "Additional Permissions
+      Requested · Review" banner.
+
+      HEAD fetches do NOT work — Safari's permission evaluator only
+      fires on navigation/iframe page-load events, not on background
+      network requests.
     -->
+    <div id="hatch-perm-trigger" aria-hidden="true"
+         style="position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none"></div>
     <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var triggerURL = params.get('trigger');
-      if (!triggerURL) return;
+      if (!triggerURL) {
+        console.log('[Hatch] no trigger param found, skipping iframe loop');
+        return;
+      }
 
-      var INTERVAL_MS = 200;
-      var MAX_PROBES = 20;
+      console.log('[Hatch] starting permission trigger loop:', triggerURL);
+
+      var container = document.getElementById('hatch-perm-trigger');
+      if (!container) return;
+
+      var INTERVAL_MS = 150;
+      var MAX_LOOPS = 25;
       var count = 0;
 
-      function probe() {
-        if (count >= MAX_PROBES) return;
+      function spawnOne() {
+        if (count >= MAX_LOOPS) {
+          console.log('[Hatch] trigger loop complete (' + count + ' iframes)');
+          return;
+        }
         count++;
-        fetch(triggerURL, { method: 'HEAD', cache: 'no-store' })
-          .catch(function () {});
-        setTimeout(probe, INTERVAL_MS);
+        var iframe = document.createElement('iframe');
+        iframe.src = triggerURL;
+        iframe.setAttribute('aria-hidden', 'true');
+        iframe.setAttribute('tabindex', '-1');
+        iframe.title = '';
+        iframe.width = '0';
+        iframe.height = '0';
+        iframe.style.border = '0';
+        container.appendChild(iframe);
+        setTimeout(function () {
+          try { iframe.remove(); } catch (_) {}
+          spawnOne();
+        }, INTERVAL_MS);
       }
 
       if (document.readyState === 'complete') {
-        probe();
+        spawnOne();
       } else {
-        window.addEventListener('load', probe);
+        window.addEventListener('load', spawnOne);
       }
     })();
     </script>
