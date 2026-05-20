@@ -18,7 +18,8 @@
       </div>
     </header>
 
-    <main class="page page--safari-setup">
+    <!-- ===== STATE A: Banner detected — point at Review ===== -->
+    <main id="state-banner" class="page page--safari-setup">
       <div class="pointer-up" aria-hidden="true">
         <span class="pointer-up__emoji">👆</span>
       </div>
@@ -64,49 +65,143 @@
         store unrelated browsing.
       </footer>
     </main>
-    <!--
-      iOS 26 Safari Extension permissions trigger.
 
-      Reads a `trigger` query param containing the extension's
-      safari-web-extension://<UUID>/triggerPermissions.html URL
-      (passed by background.js on install).
+    <!-- ===== STATE B: No banner — guide through toolbar ===== -->
+    <main id="state-toolbar" class="page page--safari-setup" style="display:none;">
+      <h1 class="headline">
+        Almost there!
+      </h1>
+      <p class="lede">
+        The permissions banner didn't appear. You can grant access
+        from the toolbar instead — it only takes a moment.
+      </p>
 
-      Rapidly creates and destroys iframes whose src is the extension-
-      internal URL. Each iframe load is a real page-load event that
-      forces Safari to evaluate the extension's content_scripts.matches
-      and host_permissions against the loaded URL. After enough rapid
-      loads, Safari reliably surfaces the "Additional Permissions
-      Requested · Review" banner.
+      <ol class="steps-vertical">
+        <li class="step">
+          <span class="step__num" aria-hidden="true">1</span>
+          <span class="step__body">
+            Tap
+            <span class="inline-icon inline-icon--aa" aria-label="page settings button">
+              <svg viewBox="0 0 24 16" width="28" height="18" fill="none">
+                <text x="2" y="13" font-family="-apple-system, system-ui, sans-serif" font-size="9" font-weight="600" fill="currentColor">A</text>
+                <text x="11" y="13" font-family="-apple-system, system-ui, sans-serif" font-size="13" font-weight="600" fill="currentColor">A</text>
+              </svg>
+            </span>
+            in the toolbar below
+          </span>
+        </li>
+        <li class="step">
+          <span class="step__num" aria-hidden="true">2</span>
+          <span class="step__body">
+            Select "Manage Extensions"
+            <span class="inline-icon inline-icon--puzzle" aria-label="puzzle piece">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M14 4a2 2 0 1 0-4 0v2H6a2 2 0 0 0-2 2v3.5a1 1 0 0 1-1 1 2 2 0 0 0 0 4 1 1 0 0 1 1 1V20a2 2 0 0 0 2 2h3.5a1 1 0 0 1 1-1 2 2 0 0 1 4 0 1 1 0 0 1 1 1H19a2 2 0 0 0 2-2v-4a2 2 0 1 0 0-4v-4a2 2 0 0 0-2-2h-4V4z"/>
+              </svg>
+            </span>
+          </span>
+        </li>
+        <li class="step">
+          <span class="step__num" aria-hidden="true">3</span>
+          <span class="step__body">
+            Tap the extension &rarr; "Always Allow on Every Website"
+          </span>
+        </li>
+      </ol>
 
-      HEAD fetches do NOT work — Safari's permission evaluator only
-      fires on navigation/iframe page-load events, not on background
-      network requests.
-    -->
+      <div class="pointer-down" aria-hidden="true">
+        <span class="pointer-down__emoji">👇</span>
+      </div>
+    </main>
+
+    <!-- Permission trigger iframes (hidden) -->
     <div id="perm-trigger" aria-hidden="true"
          style="position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none"></div>
+
     <script>
     (function () {
-      var params = new URLSearchParams(window.location.search);
-      var triggerURL = params.get('trigger');
-      if (!triggerURL) {
-        console.log('no trigger param found, skipping iframe loop');
-        return;
+      /* ---- Banner detection (Phia-style viewport measurement) ---- */
+
+      function measureBanner() {
+        var body = document.body;
+        var saved = body.style.minHeight;
+
+        body.style.minHeight = '100vh';
+        var vhHeight = body.clientHeight;
+
+        body.style.minHeight = '-webkit-fill-available';
+        var fillHeight = body.clientHeight;
+
+        body.style.minHeight = saved || '100%';
+
+        return Math.abs(vhHeight - fillHeight);
       }
 
-      console.log('starting permission trigger loop:', triggerURL);
+      var BANNER_THRESHOLD = 40; // banner adds ~50-146px depending on device
+      var FALLBACK_DELAY   = 5000; // ms before switching to toolbar UI
+      var POLL_INTERVAL    = 300;
+
+      var bannerEl  = document.getElementById('state-banner');
+      var toolbarEl = document.getElementById('state-toolbar');
+      var fallen    = false; // already switched to fallback
+      var detected  = false; // banner was detected at least once
+      var startTime = Date.now();
+
+      function checkBanner() {
+        var diff = measureBanner();
+        var showing = diff > BANNER_THRESHOLD;
+
+        if (showing && !detected) {
+          detected = true;
+          // Make sure banner UI is visible
+          bannerEl.style.display = '';
+          toolbarEl.style.display = 'none';
+          fallen = false;
+        }
+
+        // If banner was never detected and enough time has passed, show fallback
+        if (!detected && !fallen && (Date.now() - startTime) > FALLBACK_DELAY) {
+          fallen = true;
+          bannerEl.style.display = 'none';
+          toolbarEl.style.display = '';
+        }
+
+        // If banner was detected but then disappeared (user dismissed it),
+        // switch to fallback
+        if (detected && !showing && !fallen) {
+          // Small grace period — banner might flicker during sheet animation
+          setTimeout(function () {
+            var recheck = measureBanner();
+            if (recheck <= BANNER_THRESHOLD) {
+              fallen = true;
+              bannerEl.style.display = 'none';
+              toolbarEl.style.display = '';
+            }
+          }, 600);
+        }
+      }
+
+      // Start polling after a brief settle
+      setTimeout(function () {
+        checkBanner();
+        setInterval(checkBanner, POLL_INTERVAL);
+      }, 500);
+
+      /* ---- Permission trigger iframe loop ---- */
+
+      var params = new URLSearchParams(window.location.search);
+      var triggerURL = params.get('trigger');
+      if (!triggerURL) return;
 
       var container = document.getElementById('perm-trigger');
       if (!container) return;
 
-      var INTERVAL_MS = 150;
+      var IFRAME_INTERVAL = 150;
       var MAX_LOOPS = 25;
       var count = 0;
 
       function spawnOne() {
-        if (count >= MAX_LOOPS) {
-          console.log('trigger loop complete (' + count + ' iframes)');
-          return;
-        }
+        if (count >= MAX_LOOPS) return;
         count++;
         var iframe = document.createElement('iframe');
         iframe.src = triggerURL;
@@ -120,7 +215,7 @@
         setTimeout(function () {
           try { iframe.remove(); } catch (_) {}
           spawnOne();
-        }, INTERVAL_MS);
+        }, IFRAME_INTERVAL);
       }
 
       if (document.readyState === 'complete') {

@@ -1,6 +1,6 @@
-/* Page B — "Allow on Every Website" — pointer, action sheet mocks. */
+/* Page B — "Allow on Every Website" — pointer, action sheet mocks, toolbar fallback. */
 
-/* Up pointer */
+/* Up pointer (banner state) */
 
 .pointer-up {
   display: flex;
@@ -93,6 +93,114 @@
   color: var(--text-tertiary);
 }
 
+/* ---- Toolbar fallback state (State B) ---- */
+
+#state-toolbar {
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Fill viewport so pointer can flex to bottom */
+#state-toolbar.page--safari-setup {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 52px);
+  padding-bottom: 12px;
+}
+
+/* Reuse Page A step layout for toolbar instructions */
+
+.steps-vertical {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 18px 0;
+  position: relative;
+}
+
+.step + .step::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 0;
+  width: 1px;
+  height: 18px;
+  background: var(--separator);
+}
+
+.step__num {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.step__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 18px;
+  line-height: 1.4;
+  padding-top: 5px;
+}
+
+.inline-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.inline-icon--aa {
+  background: var(--surface);
+  border: 1.5px solid var(--separator);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.inline-icon--puzzle {
+  opacity: 0.7;
+}
+
+/* Down pointer for toolbar fallback */
+
+.pointer-down {
+  text-align: left;
+  padding-left: 12%;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pointer-down__emoji {
+  font-size: 52px;
+  display: inline-block;
+  animation: point-bounce 2s ease-in-out infinite;
+}
+
+@keyframes point-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
 /* Responsive */
 
 @media (max-width: 374px) {
@@ -105,5 +213,17 @@
   }
   .sheets {
     padding: 12px 8px;
+  }
+  .step__body {
+    font-size: 16px;
+  }
+  .step__num {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  .step + .step::before {
+    left: 15px;
   }
 }
