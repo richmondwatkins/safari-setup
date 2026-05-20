@@ -139,6 +139,11 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* When Safari shows a back button, the AA button shifts right */
+.pointer-down--has-back {
+  padding-left: 18%;
+}
+
 .pointer-down__emoji {
   font-size: 52px;
   display: inline-block;

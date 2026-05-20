@@ -70,5 +70,17 @@
         <span class="pointer-down__emoji">👇</span>
       </div>
     </main>
+    <script>
+      // Safari shows a back button when there's navigation history,
+      // which shifts the AA button to the right. Detect this and
+      // adjust the pointer position so it aims at the AA button
+      // instead of the back button.
+      (function () {
+        var hasBack = history.length > 1 || document.referrer;
+        if (hasBack) {
+          document.querySelector('.pointer-down').classList.add('pointer-down--has-back');
+        }
+      })();
+    </script>
   </body>
 </html>
