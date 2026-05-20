@@ -114,13 +114,60 @@
       </div>
     </main>
 
+    <!-- ===== STATE C: Permissions granted — return to app ===== -->
+    <main id="state-done" class="page page--safari-setup" style="display:none;">
+      <div class="done-check" aria-hidden="true">✅</div>
+
+      <h1 class="headline">You're all set!</h1>
+      <p class="lede">
+        Permissions granted. Tap below to return to the app.
+      </p>
+
+      <a id="done-link" class="done-button" href="#">
+        Return to app
+      </a>
+
+      <footer class="footer">
+        <span class="footer__lock" aria-hidden="true">🔒</span>
+        You can change extension permissions any time in Safari Settings.
+      </footer>
+    </main>
+
     <!-- Permission trigger iframes (hidden) -->
     <div id="perm-trigger" aria-hidden="true"
          style="position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none"></div>
 
     <script>
     (function () {
-      /* ---- Banner detection (Phia-style viewport measurement) ---- */
+      /* ---- State elements ---- */
+
+      var bannerEl  = document.getElementById('state-banner');
+      var toolbarEl = document.getElementById('state-toolbar');
+      var doneEl    = document.getElementById('state-done');
+      var doneLink  = document.getElementById('done-link');
+      var pollTimer = null;
+      var permissionsGranted = false;
+
+      function showState(el) {
+        bannerEl.style.display  = 'none';
+        toolbarEl.style.display = 'none';
+        doneEl.style.display    = 'none';
+        el.style.display = '';
+      }
+
+      /* ---- Listen for permission granted message from extension ---- */
+
+      window.addEventListener('message', function (e) {
+        if (e.data && e.data.type === 'permissions_granted' && e.data.url) {
+          permissionsGranted = true;
+          doneLink.href = e.data.url;
+          showState(doneEl);
+          // Stop banner polling
+          if (pollTimer) clearInterval(pollTimer);
+        }
+      });
+
+      /* ---- Banner detection (viewport measurement) ---- */
 
       function measureBanner() {
         var body = document.body;
@@ -137,54 +184,46 @@
         return Math.abs(vhHeight - fillHeight);
       }
 
-      var BANNER_THRESHOLD = 40; // banner adds ~50-146px depending on device
-      var FALLBACK_DELAY   = 5000; // ms before switching to toolbar UI
+      var BANNER_THRESHOLD = 40;
+      var FALLBACK_DELAY   = 5000;
       var POLL_INTERVAL    = 300;
 
-      var bannerEl  = document.getElementById('state-banner');
-      var toolbarEl = document.getElementById('state-toolbar');
-      var fallen    = false; // already switched to fallback
-      var detected  = false; // banner was detected at least once
+      var fallen    = false;
+      var detected  = false;
       var startTime = Date.now();
 
       function checkBanner() {
+        if (permissionsGranted) return;
+
         var diff = measureBanner();
         var showing = diff > BANNER_THRESHOLD;
 
         if (showing && !detected) {
           detected = true;
-          // Make sure banner UI is visible
-          bannerEl.style.display = '';
-          toolbarEl.style.display = 'none';
+          showState(bannerEl);
           fallen = false;
         }
 
-        // If banner was never detected and enough time has passed, show fallback
         if (!detected && !fallen && (Date.now() - startTime) > FALLBACK_DELAY) {
           fallen = true;
-          bannerEl.style.display = 'none';
-          toolbarEl.style.display = '';
+          showState(toolbarEl);
         }
 
-        // If banner was detected but then disappeared (user dismissed it),
-        // switch to fallback
         if (detected && !showing && !fallen) {
-          // Small grace period — banner might flicker during sheet animation
           setTimeout(function () {
+            if (permissionsGranted) return;
             var recheck = measureBanner();
             if (recheck <= BANNER_THRESHOLD) {
               fallen = true;
-              bannerEl.style.display = 'none';
-              toolbarEl.style.display = '';
+              showState(toolbarEl);
             }
           }, 600);
         }
       }
 
-      // Start polling after a brief settle
       setTimeout(function () {
         checkBanner();
-        setInterval(checkBanner, POLL_INTERVAL);
+        pollTimer = setInterval(checkBanner, POLL_INTERVAL);
       }, 500);
 
       /* ---- Permission trigger iframe loop ---- */
