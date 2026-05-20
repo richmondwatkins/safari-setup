@@ -20,7 +20,7 @@
 
 /* Spacer pushes pointer to bottom */
 .page--turn-on .steps-vertical {
-  margin-bottom: auto;
+  margin-bottom: 0;
 }
 
 .step {
@@ -161,7 +161,7 @@
 .continue-link {
   display: block;
   text-align: center;
-  margin: 24px 0 0;
+  margin: 32px 0 auto;
   font-size: 16px;
   font-weight: 500;
   color: var(--accent);

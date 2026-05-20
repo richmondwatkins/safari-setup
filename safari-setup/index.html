@@ -195,6 +195,13 @@
       function checkBanner() {
         if (permissionsGranted) return;
 
+        // Content script signals permission grant via data attribute
+        if (document.documentElement.dataset.extPermitted === '1') {
+          permissionsGranted = true;
+          if (pollTimer) clearInterval(pollTimer);
+          return;
+        }
+
         var diff = measureBanner();
         var showing = diff > BANNER_THRESHOLD;
 
