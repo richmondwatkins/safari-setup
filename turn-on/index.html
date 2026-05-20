@@ -65,16 +65,23 @@
       <div class="pointer-down" aria-hidden="true">
         <span class="pointer-down__emoji">👇</span>
       </div>
+
+      <a id="continue-btn" class="continue-button" href="../safari-setup/">
+        I turned it on
+      </a>
     </main>
     <script>
-      // Safari shows a back button when there's navigation history,
-      // which shifts the AA button to the right. Detect this and
-      // adjust the pointer position so it aims at the AA button
-      // instead of the back button.
       (function () {
+        // Adjust pointer for Safari back button
         var hasBack = history.length > 1 || document.referrer;
         if (hasBack) {
           document.querySelector('.pointer-down').classList.add('pointer-down--has-back');
+        }
+
+        // Forward any query params (trigger, etc.) to Page B
+        var btn = document.getElementById('continue-btn');
+        if (btn && window.location.search) {
+          btn.href = btn.href + window.location.search;
         }
       })();
     </script>
