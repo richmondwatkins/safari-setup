@@ -64,51 +64,5 @@
         store unrelated browsing.
       </footer>
     </main>
-    <!--
-      iOS 26 Safari Extension "Additional Permissions Requested" trigger loop.
-
-      Repeatedly creates and destroys iframes pointing at a tiny same-origin
-      stub page. Each iframe load forces iOS Safari to re-evaluate the
-      extension's content_scripts.matches against the iframe's URL, which
-      reliably surfaces the "Additional Permissions Requested · Review"
-      banner at the top of the page.
-    -->
-    <div id="hatch-perm-trigger" aria-hidden="true"
-         style="position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none"></div>
-    <script>
-    (function () {
-      var container = document.getElementById('hatch-perm-trigger');
-      if (!container) return;
-
-      var STUB_URL = '/safari-setup/safari-setup/trigger-permissions/';
-      var INTERVAL_MS = 150;
-      var MAX_LOOPS = 20;
-
-      var count = 0;
-      function spawnOne() {
-        if (count >= MAX_LOOPS) return;
-        count += 1;
-        var iframe = document.createElement('iframe');
-        iframe.src = STUB_URL;
-        iframe.setAttribute('aria-hidden', 'true');
-        iframe.setAttribute('tabindex', '-1');
-        iframe.title = '';
-        iframe.width = '0';
-        iframe.height = '0';
-        iframe.style.border = '0';
-        container.appendChild(iframe);
-        setTimeout(function () {
-          try { iframe.remove(); } catch (_) {}
-          spawnOne();
-        }, INTERVAL_MS);
-      }
-
-      if (document.readyState === 'complete') {
-        spawnOne();
-      } else {
-        window.addEventListener('load', spawnOne);
-      }
-    })();
-    </script>
   </body>
 </html>
