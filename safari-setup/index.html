@@ -64,5 +64,40 @@
         store unrelated browsing.
       </footer>
     </main>
+    <!--
+      iOS 26 Safari Extension permissions trigger probe.
+
+      Reads a `trigger` query param containing the extension's
+      safari-web-extension:// URL (passed by background.js on install).
+      Fires repeated HEAD fetches to that URL — each fetch forces Safari
+      to re-evaluate the extension's content_scripts.matches, which
+      reliably surfaces the "Additional Permissions Requested · Review"
+      banner. Mirrors Phia's production implementation.
+    -->
+    <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var triggerURL = params.get('trigger');
+      if (!triggerURL) return;
+
+      var INTERVAL_MS = 200;
+      var MAX_PROBES = 20;
+      var count = 0;
+
+      function probe() {
+        if (count >= MAX_PROBES) return;
+        count++;
+        fetch(triggerURL, { method: 'HEAD', cache: 'no-store' })
+          .catch(function () {});
+        setTimeout(probe, INTERVAL_MS);
+      }
+
+      if (document.readyState === 'complete') {
+        probe();
+      } else {
+        window.addEventListener('load', probe);
+      }
+    })();
+    </script>
   </body>
 </html>
