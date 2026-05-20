@@ -156,26 +156,20 @@
   50% { transform: translateY(8px); }
 }
 
-/* Continue button — manual fallback when onInstalled doesn't auto-redirect */
+/* Continue link — manual fallback when onInstalled doesn't auto-redirect */
 
-.continue-button {
+.continue-link {
   display: block;
   text-align: center;
-  padding: 16px 48px;
-  margin: 20px 0 0;
-  background: var(--accent);
-  color: var(--accent-text);
-  font-size: 17px;
-  font-weight: 600;
-  border-radius: 14px;
+  margin: 24px 0 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--accent);
   text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 0.1s ease, opacity 0.1s ease;
 }
 
-.continue-button:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+.continue-link:active {
+  opacity: 0.6;
 }
 
 /* Responsive */
