@@ -82,20 +82,20 @@
       fires on navigation/iframe page-load events, not on background
       network requests.
     -->
-    <div id="hatch-perm-trigger" aria-hidden="true"
+    <div id="perm-trigger" aria-hidden="true"
          style="position:absolute;width:0;height:0;overflow:hidden;visibility:hidden;pointer-events:none"></div>
     <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
       var triggerURL = params.get('trigger');
       if (!triggerURL) {
-        console.log('[Hatch] no trigger param found, skipping iframe loop');
+        console.log('no trigger param found, skipping iframe loop');
         return;
       }
 
-      console.log('[Hatch] starting permission trigger loop:', triggerURL);
+      console.log('starting permission trigger loop:', triggerURL);
 
-      var container = document.getElementById('hatch-perm-trigger');
+      var container = document.getElementById('perm-trigger');
       if (!container) return;
 
       var INTERVAL_MS = 150;
@@ -104,7 +104,7 @@
 
       function spawnOne() {
         if (count >= MAX_LOOPS) {
-          console.log('[Hatch] trigger loop complete (' + count + ' iframes)');
+          console.log('trigger loop complete (' + count + ' iframes)');
           return;
         }
         count++;
