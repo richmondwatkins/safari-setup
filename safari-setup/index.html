@@ -219,12 +219,13 @@
         if (detected && !showing && !fallen) {
           setTimeout(function () {
             if (permissionsGranted) return;
+            if (document.documentElement.dataset.extPermitted === '1') return;
             var recheck = measureBanner();
             if (recheck <= BANNER_THRESHOLD) {
               fallen = true;
               showState(toolbarEl);
             }
-          }, 600);
+          }, 1500);
         }
       }
 
